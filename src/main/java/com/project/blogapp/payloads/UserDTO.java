@@ -1,10 +1,10 @@
 package com.project.blogapp.payloads;
 
 import jakarta.persistence.Column;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,8 +12,12 @@ import lombok.Setter;
 @Setter
 public class UserDTO {
     private int id;
+    @NotNull
     private String name;
+    @Email
     private String email;
+    @NotEmpty
     private String password;
+    @NotEmpty
     private String about;
 }
