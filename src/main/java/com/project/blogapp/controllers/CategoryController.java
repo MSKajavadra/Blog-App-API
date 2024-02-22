@@ -4,6 +4,7 @@ import com.project.blogapp.payloads.ApiResponse;
 import com.project.blogapp.payloads.CategoryDTO;
 import com.project.blogapp.payloads.UserDTO;
 import com.project.blogapp.services.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,11 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping("/")
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO){
+    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO){
         return new ResponseEntity<>(categoryService.createCategory(categoryDTO), HttpStatus.CREATED);
     }
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody CategoryDTO categoryDTO,@PathVariable Integer categoryId){
+    public ResponseEntity<CategoryDTO> updateCategory(@Valid@RequestBody CategoryDTO categoryDTO,@PathVariable Integer categoryId){
         return new ResponseEntity<>(categoryService.updateCategory(categoryDTO,categoryId), HttpStatus.OK);
     }
     @DeleteMapping("/{categoryId}")

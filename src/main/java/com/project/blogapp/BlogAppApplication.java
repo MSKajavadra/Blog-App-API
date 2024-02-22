@@ -13,7 +13,7 @@ public class BlogAppApplication {
 	}
 
 	@Bean
-	public ModelMapper modelMapper(){
+	public ModelMapper modelMapper(){  //For convert Object to Another Class
 		return new ModelMapper();
 	}
 }
