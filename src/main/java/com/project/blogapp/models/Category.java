@@ -9,16 +9,16 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 @Setter
-public class User {
+@Getter
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int categoryId;
 
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
-    private String email;
-    private String password;
-    private String about;
+    @Column(name = "title")
+    private String categoryTitle;
+
+    @Column(name = "description")
+    private String categoryDescription;
 }
