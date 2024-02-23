@@ -2,8 +2,8 @@ package com.project.blogapp.controllers;
 
 import com.project.blogapp.payloads.ApiResponse;
 import com.project.blogapp.payloads.CategoryDTO;
-import com.project.blogapp.payloads.UserDTO;
 import com.project.blogapp.services.CategoryService;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
