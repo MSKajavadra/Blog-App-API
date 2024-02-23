@@ -1,10 +1,8 @@
-package com.project.blogapp.services.impl;
+package com.project.blogapp.services.implementations;
 
 import com.project.blogapp.exceptions.ResourceNotFoundException;
 import com.project.blogapp.models.Category;
-import com.project.blogapp.models.User;
 import com.project.blogapp.payloads.CategoryDTO;
-import com.project.blogapp.payloads.UserDTO;
 import com.project.blogapp.repository.CategoryRepo;
 import com.project.blogapp.services.CategoryService;
 import org.modelmapper.ModelMapper;
