@@ -5,18 +5,22 @@ import com.project.blogapp.models.Category;
 import com.project.blogapp.models.Post;
 import com.project.blogapp.models.User;
 import com.project.blogapp.payloads.PostDTO;
+import com.project.blogapp.payloads.PostResponse;
 import com.project.blogapp.repository.CategoryRepo;
 import com.project.blogapp.repository.PostRepo;
 import com.project.blogapp.repository.UserRepo;
 import com.project.blogapp.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -54,12 +58,27 @@ public class PostServiceImpl implements PostService {
         postRepo.delete(post);
     }
     @Override
-    public List<PostDTO> getAllPost(){
+    public PostResponse getAllPost(Integer pageNo, Integer pageSize, String sortBy, String sortDir){
+        Sort sort=Sort.by(sortBy);
+        if(sortDir.equalsIgnoreCase("desc")) sort = sort.descending();
+
+        Pageable pageable= PageRequest.of(pageNo-1,pageSize,sort);
+        Page<Post> postPage=postRepo.findAll(pageable);
+
         List<PostDTO> postDTOS=new ArrayList<>();
-        for(Post post:postRepo.findAll()){
+        for(Post post:postPage.getContent()){
             postDTOS.add(modelMapper.map(post,PostDTO.class));
         }
-        return postDTOS;
+
+        PostResponse postResponse=new PostResponse();
+        postResponse.setContent(postDTOS);
+        postResponse.setPageNo(postPage.getNumber()+1);
+        postResponse.setPageSize(postPage.getSize());
+        postResponse.setTotalElements(postPage.getTotalElements());
+        postResponse.setTotalPage(postPage.getTotalPages());
+        postResponse.setLastPage(postPage.isLast());
+
+        return postResponse;
     }
     @Override
     public PostDTO getPostById(Integer postId){
@@ -67,18 +86,66 @@ public class PostServiceImpl implements PostService {
         return modelMapper.map(post,PostDTO.class);
     }
     @Override
-    public List<PostDTO> getPostByCategory(Integer categoryId){
+    public PostResponse getPostByCategory(Integer categoryId, Integer pageNo, Integer pageSize, String sortBy, String sortDir){
         Category category=categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category","Id",categoryId));
-        List<Post> posts=postRepo.findByCategory(category);
-        return posts.stream().map(post -> modelMapper.map(post,PostDTO.class)).collect(Collectors.toList());
+
+        Sort sort=Sort.by(sortBy);
+        if(sortDir.equalsIgnoreCase("desc")) sort = sort.descending();
+
+        Pageable pageable= PageRequest.of(pageNo-1,pageSize,sort);
+        Page<Post> postPage=postRepo.findByCategory(category,pageable);
+        List<PostDTO> postDTOS=postPage.stream().map(post -> modelMapper.map(post,PostDTO.class)).toList();
+
+        PostResponse postResponse=new PostResponse();
+        postResponse.setContent(postDTOS);
+        postResponse.setPageNo(postPage.getNumber()+1);
+        postResponse.setPageSize(postPage.getSize());
+        postResponse.setTotalElements(postPage.getTotalElements());
+        postResponse.setTotalPage(postPage.getTotalPages());
+        postResponse.setLastPage(postPage.isLast());
+
+        return postResponse;
     }
     @Override
-    public List<PostDTO> getPostByUser(Integer userId){
+    public PostResponse getPostByUser(Integer userId, Integer pageNo, Integer pageSize, String sortBy, String sortDir){
         User user=userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","Id",userId));
-        List<PostDTO> postDTOS=new ArrayList<>();
-        for(Post post : postRepo.findByUser(user)){
-            postDTOS.add(modelMapper.map(post,PostDTO.class));
-        }
-        return postDTOS;
+
+        Sort sort=Sort.by(sortBy);
+        if(sortDir.equalsIgnoreCase("desc")) sort = sort.descending();
+
+        Pageable pageable= PageRequest.of(pageNo-1,pageSize,sort);
+        Page<Post> postPage=postRepo.findByUser(user,pageable);
+        List<PostDTO> postDTOS=postPage.stream().map(post -> modelMapper.map(post,PostDTO.class)).toList();
+
+        PostResponse postResponse=new PostResponse();
+        postResponse.setContent(postDTOS);
+        postResponse.setPageNo(postPage.getNumber()+1);
+        postResponse.setPageSize(postPage.getSize());
+        postResponse.setTotalElements(postPage.getTotalElements());
+        postResponse.setTotalPage(postPage.getTotalPages());
+        postResponse.setLastPage(postPage.isLast());
+
+        return postResponse;
+    }
+
+    @Override
+    public PostResponse searchPost(String keyWord, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+        Sort sort=Sort.by(sortBy);
+        if(sortDir.equalsIgnoreCase("desc")) sort = sort.descending();
+
+        Pageable pageable= PageRequest.of(pageNo-1,pageSize,sort);
+        Page<Post> postPage=postRepo.findByTitleContaining(keyWord,pageable);
+
+        List<PostDTO> postDTOS=postPage.stream().map(post -> modelMapper.map(post,PostDTO.class)).toList();
+
+        PostResponse postResponse=new PostResponse();
+        postResponse.setContent(postDTOS);
+        postResponse.setPageNo(postPage.getNumber()+1);
+        postResponse.setPageSize(postPage.getSize());
+        postResponse.setTotalElements(postPage.getTotalElements());
+        postResponse.setTotalPage(postPage.getTotalPages());
+        postResponse.setLastPage(postPage.isLast());
+
+        return postResponse;
     }
 }

@@ -1,6 +1,5 @@
 package com.project.blogapp.payloads;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,7 @@ import lombok.Setter;
 @Getter
 public class CategoryDTO {
 
-    private int categoryId;
+    private int Id;
 
     @NotEmpty
     @Size(min = 4)
