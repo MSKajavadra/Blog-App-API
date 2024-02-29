@@ -1,11 +1,11 @@
 package com.project.blogapp.payloads;
 
-import com.project.blogapp.models.Category;
-import com.project.blogapp.models.User;
+import com.project.blogapp.models.Comment;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,4 +21,5 @@ public class PostDTO {
     private Date addedDate;
     private CategoryDTO category;
     private UserDTO user;
+    private List<CommentDTO> comments;
 }
