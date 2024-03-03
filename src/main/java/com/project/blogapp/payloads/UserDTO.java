@@ -1,8 +1,12 @@
 package com.project.blogapp.payloads;
 
+import com.project.blogapp.models.Role;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,4 +30,6 @@ public class UserDTO {
 
     @NotEmpty
     private String about;
+
+    private List<RoleDTO> roles=new ArrayList<>();
 }

@@ -1,7 +1,11 @@
 package com.project.blogapp.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.project.blogapp.exceptions.InvalidCredentialsException;
+import com.project.blogapp.payloads.JwtRequest;
+import com.project.blogapp.payloads.JwtResponse;
+import com.project.blogapp.payloads.UserDTO;
+import com.project.blogapp.security.JwtHelper;
+import com.project.blogapp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,50 +17,41 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/blog/v1/auth/")
 public class AuthController {
-
     @Autowired
     private UserDetailsService userDetailsService;
-
     @Autowired
-    private AuthenticationManager manager;
-
+    private AuthenticationManager authenticationManager;
     @Autowired
-    private JwtHelper helper;
+    private JwtHelper jwtHelper;
+    @Autowired
+    private UserService userService;
 
-    private Logger logger = LoggerFactory.getLogger(AuthController.class);
-
+    @PostMapping("/register")
+    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO){
+        return new ResponseEntity<>(userService.registerUser(userDTO),HttpStatus.CREATED);
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
+    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) throws Exception {
 
-        this.doAuthenticate(request.getEmail(), request.getPassword());
+        this.authenticate(request.getUsername(), request.getPassword());
 
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        String token = this.jwtHelper.generateToken(userDetails);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-        String token = this.helper.generateToken(userDetails);
-
-        JwtResponse response = JwtResponse.builder()
-                .jwtToken(token)
-                .username(userDetails.getUsername()).build();
+        JwtResponse response = JwtResponse.builder().token(token).build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    private void doAuthenticate(String email, String password) {
-
+    private void authenticate(String email, String password) throws Exception {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
         try {
-            manager.authenticate(authentication);
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException(" Invalid Username or Password  !!");
+            authenticationManager.authenticate(authentication);
+        }catch (BadCredentialsException e){
+            System.out.println("Invalid Details");
+            throw new InvalidCredentialsException("Invalid Username or Password");
         }
-
     }
-
-    @ExceptionHandler(BadCredentialsException.class)
-    public String exceptionHandler() {
-        return "Credentials Invalid !!";
-    }
-
 }
