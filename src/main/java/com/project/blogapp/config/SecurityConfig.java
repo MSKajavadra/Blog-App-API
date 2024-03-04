@@ -27,7 +27,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class SecurityConfig {
     public static final String[] PUBLIC_URLS={
             "/blog/v1/auth/**",
-            "/v3/api-docs",
+            "/v3/api-docs/**",
             "/swagger-resources/**",
             "/swagger-ui/**",
             "/webjars/**"
@@ -44,7 +44,8 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.GET).permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
+                )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
